@@ -1,0 +1,39 @@
+server:
+  port: 8085
+
+#kafka配置信息
+kafka:
+  producer:
+    bootstrap-servers: 127.0.0.1:9002
+    batch-size: 32768                                   #一次最多发送数据量  32K
+    retries: 3                                          #发送失败后的重复发送次数
+    buffer-memory: 33554432                             #32M批处理缓冲区
+    linger: 5                                           #延迟发送时间ms，如果未达到batch-size，但是时间达到linger将发送消息
+  consumer:
+    bootstrap-servers: 127.0.0.1:9002
+    auto-offset-reset: latest                           #新建消费组时从什么位置开始消费  latest：最近位置   earliest：最早位置
+    max-poll-records: 2000                              #批量消费一次最大拉取的数据量
+    enable-auto-commit: false                           #是否开启自动提交
+    auto-commit-interval: 1000                          #自动提交的间隔时间，自动提交开启时生效
+    session-timeout: 20000                              #连接超时时间
+    max-poll-interval: 15000                            #手动提交设置与poll的心跳数,如果消息队列中没有消息，等待毫秒后，调用poll()方法。如果队列中有消息，立即消费消息，每次消费的消息的多少可以通过max.poll.records配置。
+    max-partition-fetch-bytes: 10485760                 #设置拉取数据的大小,10M
+    group-id: mpa-1                                     #消费组
+  listener:
+    batch-listener: true                                #是否开启批量消费，true表示批量消费
+    concurrencys: 5                                     #设置消费的线程数
+    poll-timeout: 1500                                  #只限自动提交
+
+gps:
+  netty:
+    tcp:
+      port: 8888
+      read-timeout: 15 #读超时 15分钟
+    udp:
+      port: 7777
+    threads:
+      boss: 1 # 这个配置项可能表示一个 "boss" 线程，值为 1，这可能是一个控制线程的数量或其他线程池相关的配置。
+      worker: 4 # 这个配置项可能表示 "worker" 线程，值为 4，这可能是控制工作线程的数量。
+      business:
+        num: 1 #业务线程数量
+        max-pending: 100000 # max-pending 配置项的值为 100000，这可能是指定业务线程的最大挂起数量。
